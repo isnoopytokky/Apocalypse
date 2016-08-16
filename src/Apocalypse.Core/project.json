@@ -1,13 +1,10 @@
 {
   "version": "1.0.0-*",
   "buildOptions": {
-    "debugType": "portable",
-    "emitEntryPoint": true
+    "debugType": "portable"
   },
   "dependencies": {
-    "Apocalypse.Core": "1.0.0",
-    "Apocalypse.Logging": "1.0.0",
-    "DryIoc": "2.6.4"
+    "Apocalypse.Logging": "1.0.0"
   },
   "frameworks": {
     "netcoreapp1.0": {
