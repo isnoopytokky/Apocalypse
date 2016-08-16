@@ -16,19 +16,30 @@ namespace Apocalypse.Console.Logging
 
         void WriteLog(string type, string message, LogCategory category)
         {
-            System.Console.ForegroundColor = ConsoleColor.Blue;
-            System.Console.Write($"[{type}] ");
+            var defaultColor = System.Console.ForegroundColor;
 
+            try
+            {
+                System.Console.ForegroundColor = ConsoleColor.Blue;
+                System.Console.Write($"[{type}] ");
+                System.Console.ForegroundColor = GetColorForCategory(category);
+                System.Console.WriteLine(message);
+            }
+            finally
+            {
+                System.Console.ForegroundColor = defaultColor;
+            }
+        }
+
+        static ConsoleColor GetColorForCategory(LogCategory category)
+        {
             switch (category)
             {
                 case LogCategory.Apocalypse:
-                    System.Console.ForegroundColor = ConsoleColor.Cyan;
-                    break;
+                    return ConsoleColor.Cyan;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(category), "Unsupported category.");
             }
-
-            System.Console.WriteLine(message);
         }
     }
 }
