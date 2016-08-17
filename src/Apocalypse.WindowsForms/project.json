@@ -1,0 +1,17 @@
+{
+  "title": "Apocalypse",
+  "copyright": "Copyright © 2016 Apocalypse Team",
+  "description": "Yet Another Client for Ragnarok Online",
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
+  "dependencies": {},
+  "frameworks": {
+    "net462": {
+      "dependencies": {
+        "System.Windows.Forms": "4.0.0"
+      }
+    }
+  }
+}
