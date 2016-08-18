@@ -4,7 +4,10 @@
     "debugType": "portable"
   },
   "dependencies": {
-    "Apocalypse.Logging": "1.0.0"
+    "Apocalypse.Logging": {
+      "version": "1.0.0",
+      "target": "project"
+    }
   },
   "frameworks": {
     "netcoreapp1.0": {

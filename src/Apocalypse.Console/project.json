@@ -5,8 +5,14 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "Apocalypse.Core": "1.0.0",
-    "Apocalypse.Logging": "1.0.0",
+    "Apocalypse.Core": {
+      "version": "1.0.0",
+      "target": "project"
+    },
+    "Apocalypse.Logging": {
+      "version": "1.0.0",
+      "target": "project"
+    },
     "DryIoc": "2.6.4"
   },
   "frameworks": {
