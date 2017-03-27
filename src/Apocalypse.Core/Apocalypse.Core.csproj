@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <RuntimeIdentifiers>win7-x64;ubuntu.16.04-x64;osx.10.11-x64</RuntimeIdentifiers>
+    <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Apocalypse.Logging/Apocalypse.Logging.csproj" />
+  </ItemGroup>
+
+</Project>
