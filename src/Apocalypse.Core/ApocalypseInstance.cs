@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Apocalypse.Logging;
 
 namespace Apocalypse.Core
 {
@@ -10,7 +9,7 @@ namespace Apocalypse.Core
         {
         }
 
-        public Task RunAsync(ILogger logger, CancellationToken cancellationToken)
+        public Task RunAsync(CancellationToken cancellationToken)
         {
             return Task.FromResult(0);
         }

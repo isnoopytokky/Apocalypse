@@ -88,7 +88,7 @@ namespace Apocalypse.Console
                 };
 
                 var instance = services.Resolve<IApocalypseInstance>();
-                instance.RunAsync(logger, terminateEvent.Token).Wait();
+                instance.RunAsync(terminateEvent.Token).Wait();
             }
 
             // Finalize.
