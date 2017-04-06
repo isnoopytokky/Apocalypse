@@ -10,10 +10,12 @@
   <ItemGroup>
     <ProjectReference Include="../Apocalypse.Core/Apocalypse.Core.csproj" />
     <ProjectReference Include="../Apocalypse.Logging/Apocalypse.Logging.csproj" />
+    <ProjectReference Include="../Apocalypse.Providers.FileSystem/Apocalypse.Providers.FileSystem.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DryIoc" Version="2.6.4" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

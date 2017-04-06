@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Loader;
 using System.Threading;
 using Apocalypse.Console.Logging;
 using Apocalypse.Core;
 using Apocalypse.Logging;
 using Apocalypse.Logging.Concurrent;
+using Apocalypse.Providers.FileSystem;
 using DryIoc;
 
 namespace Apocalypse.Console
@@ -28,17 +31,29 @@ namespace Apocalypse.Console
             return container;
         }
 
+        static IEnumerable<IApocalypseModule> LoadModules(IContainer services)
+        {
+            var provider = new ModuleProvider(AssemblyLoadContext.Default, "modules");
+            return provider.LoadAllModules();
+        }
+
         static void Main(string[] args)
         {
-            var services = CreateServiceFactory();
+            using (var services = CreateServiceFactory())
+            {
+                var modules = LoadModules(services);
 
-            try
-            {
-                Run(services);
-            }
-            finally
-            {
-                services.Dispose();
+                try
+                {
+                    Run(services);
+                }
+                finally
+                {
+                    foreach (var module in modules)
+                    {
+                        module.Dispose();
+                    }
+                }
             }
         }
 
