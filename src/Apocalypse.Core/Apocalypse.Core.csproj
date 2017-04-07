@@ -8,4 +8,8 @@
     <ProjectReference Include="../Apocalypse.Logging/Apocalypse.Logging.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
+  </ItemGroup>
+
 </Project>

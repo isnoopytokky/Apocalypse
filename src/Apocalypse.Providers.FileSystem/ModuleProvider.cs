@@ -12,10 +12,12 @@ namespace Apocalypse.Providers.FileSystem
 {
     public sealed class ModuleProvider : IModuleProvider
     {
+        public const string DefaultModulesDirectory = "modules";
+
         readonly AssemblyLoadContext apocalypseLoadContext;
         readonly string path;
 
-        public ModuleProvider(AssemblyLoadContext apocalypseLoadContext, string path)
+        public ModuleProvider(AssemblyLoadContext apocalypseLoadContext, string path = DefaultModulesDirectory)
         {
             if (apocalypseLoadContext == null)
             {
@@ -38,20 +40,20 @@ namespace Apocalypse.Providers.FileSystem
 
         public IEnumerable<IApocalypseModule> LoadAllModules()
         {
-            foreach (var moduleDir in Directory.EnumerateDirectories(path))
-            {
-                var modulePath = Path.Combine(path, moduleDir);
+            return Directory.EnumerateDirectories(path).Select(moduleDir => LoadModule(Path.Combine(path, moduleDir))).ToArray();
+        }
 
-                var modulePropertiesFile = Path.Combine(modulePath, "module.json");
-                var moduleProperties = JsonConvert.DeserializeObject<ModuleProperties>(File.ReadAllText(modulePropertiesFile));
+        IApocalypseModule LoadModule(string modulePath)
+        {
+            var modulePropertiesFile = Path.Combine(modulePath, "module.json");
+            var moduleProperties = JsonConvert.DeserializeObject<ModuleProperties>(File.ReadAllText(modulePropertiesFile));
 
-                var moduleAssemblyName = new AssemblyName(moduleProperties.AssemblyName);
-                var assemblyLoadContext = new ModuleLoadContext(apocalypseLoadContext, modulePath, moduleAssemblyName);
-                var moduleAssembly = assemblyLoadContext.LoadFromAssemblyName(moduleAssemblyName);
+            var moduleAssemblyName = new AssemblyName(moduleProperties.AssemblyName);
+            var assemblyLoadContext = new ModuleLoadContext(apocalypseLoadContext, modulePath, moduleAssemblyName);
+            var moduleAssembly = assemblyLoadContext.LoadFromAssemblyName(moduleAssemblyName);
 
-                var moduleType = moduleAssembly.GetTypes().Single(typeof(IApocalypseModule).IsAssignableFrom);
-                yield return (IApocalypseModule)Activator.CreateInstance(moduleType);
-            }
+            var moduleType = moduleAssembly.GetTypes().Single(typeof(IApocalypseModule).IsAssignableFrom);
+            return (IApocalypseModule)Activator.CreateInstance(moduleType);
         }
     }
 }
