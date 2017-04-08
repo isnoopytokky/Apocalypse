@@ -40,7 +40,7 @@ namespace Apocalypse.Providers.FileSystem
 
         public IEnumerable<IApocalypseModule> LoadAllModules()
         {
-            return Directory.EnumerateDirectories(path).Select(moduleDir => LoadModule(Path.Combine(path, moduleDir))).ToArray();
+            return Directory.EnumerateDirectories(path).Select(modulePath => LoadModule(modulePath)).ToArray();
         }
 
         IApocalypseModule LoadModule(string modulePath)

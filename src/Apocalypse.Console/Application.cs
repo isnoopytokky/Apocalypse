@@ -122,6 +122,7 @@ namespace Apocalypse.Console
                 }
 
                 serviceContainer.Dispose();
+                Logger.Dispose();
             }
 
             disposed = true;
