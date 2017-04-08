@@ -9,3 +9,18 @@ Build Status
 |Platform   |Master                                                                                                                                                                   |
 |-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |**Windows**|[![Build status](https://ci.appveyor.com/api/projects/status/g1o94vclgrry5dml/branch/master?svg=true)](https://ci.appveyor.com/project/ExUltima/apocalypse/branch/master)|
+
+Building from sources
+---------------------
+
+In order to build from sources, you need:
+
+- [.NET Core 1.1](https://www.microsoft.com/net/core).
+- Python 3.5 or higher.
+
+Then, run the following command on the root of repository:
+
+```
+$ python3 project.py prepare
+$ python3 project.py build
+```
