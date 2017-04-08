@@ -82,7 +82,15 @@ namespace Apocalypse.Core
             try
             {
                 Starting?.Invoke(this, EventArgs.Empty);
-                await Task.Delay(-1, cancellationToken);
+
+                try
+                {
+                    await Task.Delay(-1, cancellationToken);
+                }
+                catch (TaskCanceledException)
+                {
+                    // Swallow.
+                }
 
                 State = ApocalypseInstanceState.Stopping;
                 Stopping?.Invoke(this, EventArgs.Empty);
