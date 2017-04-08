@@ -4,6 +4,7 @@ namespace Apocalypse.Logging
 {
     public interface ILogger : IDisposable
     {
-        void Info(string message, LogCategory category = LogCategory.Apocalypse);
+        void Error(string message, LogCategory category);
+        void Info(string message, LogCategory category);
     }
 }

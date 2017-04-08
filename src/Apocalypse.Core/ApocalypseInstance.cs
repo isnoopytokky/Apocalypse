@@ -3,21 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Apocalypse.Logging;
 
 namespace Apocalypse.Core
 {
     public sealed class ApocalypseInstance : IApocalypseInstance
     {
         readonly HashSet<Task> activeTasks = new HashSet<Task>();
+        readonly IApocalypseApplication app;
 
-        public ApocalypseInstanceState State
+        public ApocalypseInstance(IApocalypseApplication app)
         {
-            get;
-            private set;
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            this.app = app;
         }
 
-        public event EventHandler Starting;
+        public ApocalypseInstanceState State { get; private set; }
 
+        public event EventHandler Starting;
         public event EventHandler Stopping;
 
         public void Dispose()
@@ -31,6 +38,8 @@ namespace Apocalypse.Core
                 throw new ArgumentNullException(nameof(task));
             }
 
+            var finalizationProps = new TaskFinalizationProperties();
+
             lock (activeTasks)
             {
                 if (State == ApocalypseInstanceState.Stopping)
@@ -38,7 +47,20 @@ namespace Apocalypse.Core
                     throw new InvalidOperationException("Instance is being shutting down.");
                 }
 
-                if (!activeTasks.Add(task))
+                finalizationProps.Finalizer = task.ContinueWith(t => 
+                {
+                    lock (activeTasks)
+                    {
+                        activeTasks.Remove(finalizationProps.Finalizer);
+                    }
+
+                    if (t.IsFaulted)
+                    {
+                        app.Logger.Error(t.Exception.ToString(), LogCategory.Apocalypse);
+                    }
+                }, TaskContinuationOptions.RunContinuationsAsynchronously);
+
+                if (!activeTasks.Add(finalizationProps.Finalizer))
                 {
                     throw new ArgumentException("The task is already exists.", nameof(task));
                 }
@@ -54,17 +76,15 @@ namespace Apocalypse.Core
 
             activeTasks.Clear();
 
-            // Create a task that listen for termination.
-            var terminationWaitingTask = Task.Delay(-1, cancellationToken);
-            RegisterTask(terminationWaitingTask);
-
             // Enter main loop.
             State = ApocalypseInstanceState.Running;
 
             try
             {
                 Starting?.Invoke(this, EventArgs.Empty);
-                await MainLoop(terminationWaitingTask);
+                await Task.Delay(-1, cancellationToken);
+
+                State = ApocalypseInstanceState.Stopping;
                 Stopping?.Invoke(this, EventArgs.Empty);
             }
             catch
@@ -72,8 +92,6 @@ namespace Apocalypse.Core
                 State = ApocalypseInstanceState.Stopped;
                 throw;
             }
-
-            State = ApocalypseInstanceState.Stopping;
 
             // Wait all tasks to finish.
             try
@@ -93,31 +111,9 @@ namespace Apocalypse.Core
             }
         }
 
-        async Task MainLoop(Task terminationWaitingTask)
+        sealed class TaskFinalizationProperties
         {
-            for (;;)
-            {
-                Task[] tasksToWait;
-
-                // Wait one of active tasks to finish.
-                lock (activeTasks)
-                {
-                    tasksToWait = activeTasks.ToArray();
-                }
-
-                var completedTask = await Task.WhenAny(tasksToWait);
-
-                lock (activeTasks)
-                {
-                    activeTasks.Remove(completedTask);
-                }
-
-                // Check termination.
-                if (completedTask == terminationWaitingTask)
-                {
-                    break;
-                }
-            }
+            public Task Finalizer { get; set; }
         }
     }
 }

@@ -9,6 +9,11 @@ namespace Apocalypse.Console.Logging
         {
         }
 
+        public void Error(string message, LogCategory category)
+        {
+            WriteLog("Error", message, category);
+        }
+
         public void Info(string message, LogCategory category = LogCategory.Apocalypse)
         {
             WriteLog("Info", message, category);

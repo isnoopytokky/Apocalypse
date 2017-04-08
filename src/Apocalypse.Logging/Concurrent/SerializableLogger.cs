@@ -17,7 +17,15 @@ namespace Apocalypse.Logging.Concurrent
             }
         }
 
-        public void Info(string message, LogCategory category = LogCategory.Apocalypse)
+        public void Error(string message, LogCategory category)
+        {
+            lock (backed)
+            {
+                backed.Error(message, category);
+            }
+        }
+
+        public void Info(string message, LogCategory category)
         {
             lock (backed)
             {

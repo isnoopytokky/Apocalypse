@@ -61,10 +61,8 @@ namespace Apocalypse.Console
 
         public void Run()
         {
-            var serviceProvider = serviceContainer.Resolve<IServiceProvider>();
-
             // Initialize.            
-            Logger.Info("Starting Apocalypse.");
+            Logger.Info("Starting Apocalypse.", LogCategory.Apocalypse);
 
             // Run.
             using (var terminateEvent = new CancellationTokenSource())
@@ -81,15 +79,11 @@ namespace Apocalypse.Console
                     }
                 };
 
-                using (var scope = serviceProvider.CreateScope())
-                using (var instance = scope.ServiceProvider.GetRequiredService<IApocalypseInstance>())
-                {
-                    instance.RunAsync(terminateEvent.Token).Wait();
-                }
+                RunInstance(terminateEvent.Token);
             }
 
             // Finalize.
-            Logger.Info("Finalizing Apocalypse.");
+            Logger.Info("Finalizing Apocalypse.", LogCategory.Apocalypse);
         }
 
         static ILogger CreateLogger()
@@ -160,6 +154,34 @@ namespace Apocalypse.Console
             services.AddTransient<IApocalypseInstance, ApocalypseInstance>();
 
             return services;
+        }
+
+        void RunInstance(CancellationToken cancellationToken)
+        {
+            var serviceProvider = serviceContainer.Resolve<IServiceProvider>();
+
+            using (var providerScope = serviceProvider.CreateScope())
+            using (var instance = providerScope.ServiceProvider.GetRequiredService<IApocalypseInstance>())
+            {
+                var components = providerScope.ServiceProvider.GetServices<IApocalypseComponent>();
+
+                try
+                {
+                    foreach (var component in components)
+                    {
+                        component.Initialize(instance);
+                    }
+
+                    instance.RunAsync(cancellationToken).Wait();
+                }
+                finally
+                {
+                    foreach (var component in components)
+                    {
+                        component.Dispose();
+                    }
+                }
+            }
         }
     }
 }

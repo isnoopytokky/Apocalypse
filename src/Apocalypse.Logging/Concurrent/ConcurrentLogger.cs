@@ -70,7 +70,13 @@ namespace Apocalypse.Logging.Concurrent
             backed.Dispose();
         }
 
-        public void Info(string message, LogCategory category = LogCategory.Apocalypse)
+        public void Error(string message, LogCategory category)
+        {
+            var operation = new LogWritingOperation(LogType.Error, message, category);
+            QueueOperation(operation);
+        }
+
+        public void Info(string message, LogCategory category)
         {
             var operation = new LogWritingOperation(LogType.Info, message, category);
             QueueOperation(operation);
